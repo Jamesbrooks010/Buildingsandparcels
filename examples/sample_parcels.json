@@ -1,0 +1,38 @@
+[
+  {
+    "parcel_id": "sample-001",
+    "address": "1 Example Street",
+    "suburb": "Adelaide",
+    "land_area_sqm": 125,
+    "frontage_m": 6,
+    "depth_m": 21,
+    "geometry_ref": "attach-real-geometry-later",
+    "planning": {
+      "zone_code": "GN",
+      "zone_name": "General Neighbourhood",
+      "max_storeys": 2,
+      "max_site_coverage": 0.6,
+      "max_floor_area_ratio": 1.1,
+      "min_site_area_sqm": 100,
+      "overlays": []
+    }
+  },
+  {
+    "parcel_id": "sample-002",
+    "address": "2 Example Avenue",
+    "suburb": "Adelaide",
+    "land_area_sqm": 240,
+    "frontage_m": 12,
+    "depth_m": 24,
+    "geometry_ref": "attach-real-geometry-later",
+    "planning": {
+      "zone_code": "UC",
+      "zone_name": "Urban Corridor",
+      "max_storeys": 6,
+      "max_site_coverage": 0.7,
+      "max_floor_area_ratio": 3.5,
+      "min_site_area_sqm": 200,
+      "overlays": ["Main road"]
+    }
+  }
+]
