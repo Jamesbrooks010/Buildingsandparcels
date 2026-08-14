@@ -1,0 +1,13 @@
+{
+  "name": "Two storey townhouse on 100 sqm land",
+  "storeys": 2,
+  "footprint_sqm": 60,
+  "gross_floor_area_sqm": 120,
+  "minimum_site_area_sqm": 100,
+  "required_frontage_m": 5,
+  "required_depth_m": 16,
+  "required_zone_codes": ["GN", "HDN"],
+  "assumptions": {
+    "description": "Starter assumptions only; replace with planner-reviewed controls before production use."
+  }
+}

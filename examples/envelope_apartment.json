@@ -1,0 +1,13 @@
+{
+  "name": "Six level apartment on 200 sqm land",
+  "storeys": 6,
+  "footprint_sqm": 130,
+  "gross_floor_area_sqm": 780,
+  "minimum_site_area_sqm": 200,
+  "required_frontage_m": 10,
+  "required_depth_m": 20,
+  "required_zone_codes": ["UC", "AC", "HDN"],
+  "assumptions": {
+    "description": "High-density example to validate the screening workflow."
+  }
+}

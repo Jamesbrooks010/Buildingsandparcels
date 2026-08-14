@@ -1,0 +1,32 @@
+[project]
+name = "adelaide-site-finder"
+version = "0.1.0"
+description = "Find Adelaide parcels where proposed building envelopes may be feasible under parcel and planning constraints."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115.0",
+  "pydantic>=2.8.0",
+  "uvicorn>=0.30.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0.0",
+  "ruff>=0.6.0",
+]
+
+[project.scripts]
+site-finder = "site_finder.cli:main"
+site-finder-web = "site_finder.web:main"
+
+[tool.setuptools.package-data]
+site_finder = ["static/*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]

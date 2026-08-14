@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adelaide Site Finder</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Adelaide Site Finder home">
+        <span class="brand-mark">SF</span>
+        <span>Adelaide <strong>Site Finder</strong></span>
+      </a>
+      <div class="top-actions">
+        <span class="data-status"><i></i> Sample data connected</span>
+        <button class="icon-button" aria-label="Help">?</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Development feasibility, simplified</p>
+          <h1>Find the right site for<br /><em>your next project.</em></h1>
+          <p class="hero-copy">Describe a building envelope and instantly screen parcels against site dimensions and planning controls.</p>
+        </div>
+        <div class="hero-stat"><span>02</span><p>sample parcels<br />ready to screen</p></div>
+      </section>
+
+      <section class="workspace">
+        <form id="search-form" class="search-panel">
+          <div class="panel-heading">
+            <span class="step">01</span>
+            <div><h2>Define your building</h2><p>Choose a starting point, then refine the assumptions.</p></div>
+          </div>
+
+          <div class="presets" role="group" aria-label="Building presets">
+            <button type="button" class="preset active" data-preset="townhouse"><span class="building-icon">?</span><span><strong>Townhouse</strong><small>2 storeys ? 100m? site</small></span></button>
+            <button type="button" class="preset" data-preset="apartment"><span class="building-icon tall">?</span><span><strong>Apartment</strong><small>6 levels ? 200m? site</small></span></button>
+          </div>
+
+          <div class="fields">
+            <label class="wide">Scenario name<input id="name" name="name" required /></label>
+            <label>Storeys<input id="storeys" name="storeys" type="number" min="1" required /></label>
+            <label>Footprint<input id="footprint" name="footprint" type="number" min="1" required /><span class="unit">m?</span></label>
+            <label>Minimum site area<input id="site-area" name="site-area" type="number" min="1" /><span class="unit">m?</span></label>
+            <label>Minimum frontage<input id="frontage" name="frontage" type="number" min="0" step="0.1" /><span class="unit">m</span></label>
+            <label>Minimum depth<input id="depth" name="depth" type="number" min="0" step="0.1" /><span class="unit">m</span></label>
+            <label>Allowed zones<input id="zones" name="zones" placeholder="e.g. GN, HDN" /></label>
+          </div>
+          <button class="search-button" type="submit"><span>Find suitable sites</span><b>?</b></button>
+          <p class="disclaimer">Screening results are indicative only and require professional planning review.</p>
+        </form>
+
+        <section class="results-panel" aria-live="polite">
+          <div class="panel-heading results-heading">
+            <span class="step">02</span>
+            <div><h2>Candidate sites</h2><p id="result-summary">Run a search to assess the sample parcels.</p></div>
+          </div>
+          <div id="map" class="map" aria-label="Stylised map of Adelaide sample sites">
+            <div class="map-grid"></div><span class="road r1"></span><span class="road r2"></span><span class="road r3"></span>
+            <div class="map-label city">ADELAIDE</div><div class="map-label north">NORTH ADELAIDE</div><div class="map-label kent">KENT TOWN</div>
+            <div id="map-empty" class="map-empty"><span>?</span><strong>Your results will appear here</strong><small>Set your assumptions and run the site search.</small></div>
+          </div>
+          <div id="results" class="results-list"></div>
+        </section>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
