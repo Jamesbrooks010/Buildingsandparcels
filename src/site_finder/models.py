@@ -27,6 +27,8 @@ class BuildingEnvelope:
     name: str
     storeys: int
     footprint_sqm: float
+    building_width_m: float | None = None
+    building_depth_m: float | None = None
     gross_floor_area_sqm: float | None = None
     minimum_site_area_sqm: float | None = None
     required_frontage_m: float = 0
@@ -37,6 +39,18 @@ class BuildingEnvelope:
     def __post_init__(self) -> None:
         self.storeys = _positive_int(self.storeys, "storeys")
         self.footprint_sqm = _positive_float(self.footprint_sqm, "footprint_sqm")
+        self.building_width_m = _optional_positive_float(
+            self.building_width_m, "building_width_m"
+        )
+        self.building_depth_m = _optional_positive_float(
+            self.building_depth_m, "building_depth_m"
+        )
+        if (
+            self.building_width_m is not None
+            and self.building_depth_m is not None
+            and self.building_width_m * self.building_depth_m < self.footprint_sqm
+        ):
+            raise ValueError("building_width_m * building_depth_m must cover footprint_sqm.")
         self.gross_floor_area_sqm = _optional_positive_float(
             self.gross_floor_area_sqm, "gross_floor_area_sqm"
         )
@@ -72,6 +86,11 @@ class PlanningControls:
     max_site_coverage: float | None = None
     max_floor_area_ratio: float | None = None
     min_site_area_sqm: float | None = None
+    min_frontage_m: float | None = None
+    max_frontage_m: float | None = None
+    min_front_setback_m: float | None = None
+    min_rear_setback_m: float | None = None
+    min_side_setback_m: float | None = None
     overlays: list[str] = field(default_factory=list)
     notes: str | None = None
 
@@ -86,6 +105,23 @@ class PlanningControls:
             self.max_floor_area_ratio, "max_floor_area_ratio"
         )
         self.min_site_area_sqm = _optional_positive_float(self.min_site_area_sqm, "min_site_area_sqm")
+        self.min_frontage_m = _optional_positive_float(self.min_frontage_m, "min_frontage_m")
+        self.max_frontage_m = _optional_positive_float(self.max_frontage_m, "max_frontage_m")
+        if (
+            self.min_frontage_m is not None
+            and self.max_frontage_m is not None
+            and self.min_frontage_m > self.max_frontage_m
+        ):
+            raise ValueError("min_frontage_m cannot exceed max_frontage_m.")
+        self.min_front_setback_m = _optional_non_negative_float(
+            self.min_front_setback_m, "min_front_setback_m"
+        )
+        self.min_rear_setback_m = _optional_non_negative_float(
+            self.min_rear_setback_m, "min_rear_setback_m"
+        )
+        self.min_side_setback_m = _optional_non_negative_float(
+            self.min_side_setback_m, "min_side_setback_m"
+        )
 
     @classmethod
     def model_validate(cls, payload: dict[str, Any]) -> "PlanningControls":

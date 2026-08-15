@@ -14,6 +14,11 @@
       "max_site_coverage": 0.6,
       "max_floor_area_ratio": 1.1,
       "min_site_area_sqm": 100,
+      "min_frontage_m": 5,
+      "max_frontage_m": 10,
+      "min_front_setback_m": 3,
+      "min_rear_setback_m": 3,
+      "min_side_setback_m": 0.75,
       "overlays": []
     }
   },
@@ -32,6 +37,10 @@
       "max_site_coverage": 0.7,
       "max_floor_area_ratio": 3.5,
       "min_site_area_sqm": 200,
+      "min_frontage_m": 10,
+      "min_front_setback_m": 3,
+      "min_rear_setback_m": 5,
+      "min_side_setback_m": 1,
       "overlays": ["Main road"]
     }
   }

@@ -57,8 +57,12 @@ def assess_parcel(parcel: Parcel, envelope: BuildingEnvelope) -> ParcelAssessmen
     else:
         outcomes.append(_review("floor_area_ratio", "No floor-area-ratio control supplied for this parcel."))
 
-    _dimension_check(outcomes, "frontage", parcel.frontage_m, envelope.required_frontage_m, "m")
+    _dimension_check(
+        outcomes, "development_frontage", parcel.frontage_m, envelope.required_frontage_m, "m"
+    )
     _dimension_check(outcomes, "depth", parcel.depth_m, envelope.required_depth_m, "m")
+    _planning_frontage_checks(outcomes, parcel)
+    _setback_checks(outcomes, parcel, envelope)
 
     status = _aggregate_status(outcomes)
     return ParcelAssessment(parcel=parcel, status=status, score=_score(outcomes), outcomes=outcomes)
@@ -82,6 +86,60 @@ def _dimension_check(
         outcomes.append(_pass(rule, f"{rule.title()} {actual:g}{unit} meets {required:g}{unit} requirement."))
     else:
         outcomes.append(_fail(rule, f"{rule.title()} {actual:g}{unit} is below {required:g}{unit} requirement."))
+
+
+def _planning_frontage_checks(outcomes: list[RuleOutcome], parcel: Parcel) -> None:
+    planning = parcel.planning
+    controls = (
+        ("planning_frontage_min", planning.min_frontage_m, "minimum", lambda actual, limit: actual >= limit),
+        ("planning_frontage_max", planning.max_frontage_m, "maximum", lambda actual, limit: actual <= limit),
+    )
+    for rule, limit, label, comparison in controls:
+        if limit is None:
+            continue
+        if parcel.frontage_m is None:
+            outcomes.append(_review(rule, f"The {label} frontage is {limit:g}m, but parcel frontage is missing."))
+        elif comparison(parcel.frontage_m, limit):
+            outcomes.append(_pass(rule, f"Frontage {parcel.frontage_m:g}m meets the {label} {limit:g}m control."))
+        else:
+            outcomes.append(_fail(rule, f"Frontage {parcel.frontage_m:g}m breaches the {label} {limit:g}m control."))
+
+
+def _setback_checks(
+    outcomes: list[RuleOutcome], parcel: Parcel, envelope: BuildingEnvelope
+) -> None:
+    planning = parcel.planning
+    front = planning.min_front_setback_m
+    rear = planning.min_rear_setback_m
+    side = planning.min_side_setback_m
+    if front is None and rear is None and side is None:
+        return
+
+    if side is not None:
+        required_width = None if envelope.building_width_m is None else envelope.building_width_m + 2 * side
+        _fit_check(outcomes, "side_setbacks", parcel.frontage_m, required_width, "frontage", "building width")
+
+    if front is not None or rear is not None:
+        required_depth = (
+            None
+            if envelope.building_depth_m is None
+            else envelope.building_depth_m + (front or 0) + (rear or 0)
+        )
+        _fit_check(outcomes, "front_rear_setbacks", parcel.depth_m, required_depth, "depth", "building depth")
+
+
+def _fit_check(
+    outcomes: list[RuleOutcome], rule: str, available: float | None, required: float | None,
+    parcel_dimension: str, building_dimension: str,
+) -> None:
+    if required is None:
+        outcomes.append(_review(rule, f"A setback control applies, but {building_dimension} is missing."))
+    elif available is None:
+        outcomes.append(_review(rule, f"Setbacks require {required:g}m, but parcel {parcel_dimension} is missing."))
+    elif available >= required:
+        outcomes.append(_pass(rule, f"Parcel {parcel_dimension} {available:g}m provides the required {required:g}m envelope."))
+    else:
+        outcomes.append(_fail(rule, f"Parcel {parcel_dimension} {available:g}m is below the required {required:g}m envelope."))
 
 
 def _aggregate_status(outcomes: list[RuleOutcome]) -> MatchStatus:

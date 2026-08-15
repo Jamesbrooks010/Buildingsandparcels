@@ -2,6 +2,8 @@
   "name": "Six level apartment on 200 sqm land",
   "storeys": 6,
   "footprint_sqm": 130,
+  "building_width_m": 10,
+  "building_depth_m": 13,
   "gross_floor_area_sqm": 780,
   "minimum_site_area_sqm": 200,
   "required_frontage_m": 10,

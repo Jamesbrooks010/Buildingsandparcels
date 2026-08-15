@@ -2,6 +2,8 @@
   "name": "Two storey townhouse on 100 sqm land",
   "storeys": 2,
   "footprint_sqm": 60,
+  "building_width_m": 4,
+  "building_depth_m": 15,
   "gross_floor_area_sqm": 120,
   "minimum_site_area_sqm": 100,
   "required_frontage_m": 5,

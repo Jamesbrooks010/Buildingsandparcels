@@ -3,6 +3,8 @@ const presetButtons = document.querySelectorAll(".preset");
 const fields = {
   name: document.querySelector("#name"), storeys: document.querySelector("#storeys"),
   footprint: document.querySelector("#footprint"), siteArea: document.querySelector("#site-area"),
+  buildingWidth: document.querySelector("#building-width"),
+  buildingDepth: document.querySelector("#building-depth"),
   frontage: document.querySelector("#frontage"), depth: document.querySelector("#depth"),
   zones: document.querySelector("#zones"),
 };
@@ -12,6 +14,8 @@ function setEnvelope(envelope) {
   fields.name.value = envelope.name;
   fields.storeys.value = envelope.storeys;
   fields.footprint.value = envelope.footprint_sqm;
+  fields.buildingWidth.value = envelope.building_width_m || "";
+  fields.buildingDepth.value = envelope.building_depth_m || "";
   fields.siteArea.value = envelope.minimum_site_area_sqm || "";
   fields.frontage.value = envelope.required_frontage_m || "";
   fields.depth.value = envelope.required_depth_m || "";
@@ -42,6 +46,8 @@ form.addEventListener("submit", async (event) => {
   const envelope = {
     name: fields.name.value, storeys: Number(fields.storeys.value),
     footprint_sqm: Number(fields.footprint.value),
+    building_width_m: Number(fields.buildingWidth.value) || null,
+    building_depth_m: Number(fields.buildingDepth.value) || null,
     minimum_site_area_sqm: Number(fields.siteArea.value) || null,
     required_frontage_m: Number(fields.frontage.value) || 0,
     required_depth_m: Number(fields.depth.value) || 0,

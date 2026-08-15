@@ -50,3 +50,62 @@ def test_parcels_are_sorted_with_passes_first():
     assert results[0].parcel.parcel_id == "pass"
     assert results[0].status in {MatchStatus.PASS, MatchStatus.REVIEW}
     assert results[-1].status == MatchStatus.FAIL
+
+
+def test_setbacks_and_frontage_bounds_are_explicit_hard_checks():
+    envelope = BuildingEnvelope(
+        name="Townhouse",
+        storeys=2,
+        footprint_sqm=80,
+        building_width_m=8,
+        building_depth_m=10,
+    )
+    parcel = Parcel(
+        parcel_id="setback-fit",
+        land_area_sqm=300,
+        frontage_m=12,
+        depth_m=20,
+        planning=PlanningControls(
+            zone_code="GN",
+            max_storeys=2,
+            min_frontage_m=10,
+            max_frontage_m=14,
+            min_front_setback_m=4,
+            min_rear_setback_m=3,
+            min_side_setback_m=1.5,
+        ),
+    )
+
+    result = assess_parcel(parcel, envelope)
+    outcomes = {outcome.rule: outcome.status for outcome in result.outcomes}
+
+    assert outcomes["planning_frontage_min"] == MatchStatus.PASS
+    assert outcomes["planning_frontage_max"] == MatchStatus.PASS
+    assert outcomes["side_setbacks"] == MatchStatus.PASS
+    assert outcomes["front_rear_setbacks"] == MatchStatus.PASS
+
+
+def test_missing_dimensions_trigger_review_instead_of_assumed_setback_fit():
+    envelope = BuildingEnvelope(name="Apartment", storeys=3, footprint_sqm=120)
+    parcel = Parcel(
+        parcel_id="unknown-shape",
+        land_area_sqm=500,
+        planning=PlanningControls(
+            zone_code="UC", max_storeys=4, min_front_setback_m=3, min_side_setback_m=1
+        ),
+    )
+
+    result = assess_parcel(parcel, envelope)
+    outcomes = {outcome.rule: outcome.status for outcome in result.outcomes}
+
+    assert outcomes["side_setbacks"] == MatchStatus.REVIEW
+    assert outcomes["front_rear_setbacks"] == MatchStatus.REVIEW
+
+
+def test_invalid_frontage_range_is_rejected():
+    try:
+        PlanningControls(zone_code="GN", min_frontage_m=15, max_frontage_m=10)
+    except ValueError as error:
+        assert "min_frontage_m" in str(error)
+    else:
+        raise AssertionError("Expected an invalid frontage range to raise ValueError")

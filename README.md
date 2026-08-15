@@ -8,6 +8,7 @@ A starter tool for finding Adelaide property parcels where a proposed building t
 - Assesses parcels against basic planning and dimensional controls.
 - Returns candidate sites with `pass`, `review`, or `fail` rule outcomes.
 - Reads the local `data/parcels/sa-parcels.gpkg` dataset when present, with sample files retained for tests and fallback development.
+- Checks explicit site-coverage, frontage, and setback inputs without assuming missing dimensions pass.
 
 ## Project structure
 
@@ -62,3 +63,7 @@ Then post a request to `POST /candidates` with this shape:
 ## Important limitations
 
 This is an early screening tool, not a planning approval decision. Outputs should be treated as candidate leads for planner review until detailed controls, overlays, setbacks, site-specific geometry, and current South Australian planning rules are fully modelled.
+
+See [`docs/baseline.md`](docs/baseline.md) for the consolidated implementation state and
+[`docs/planning-rules-layer.md`](docs/planning-rules-layer.md) for the proposed source-linked,
+reviewable Planning Atlas integration.
