@@ -20,6 +20,8 @@ def test_preview_serves_home_and_screens_examples():
 
         with urllib.request.urlopen(f"{base_url}/api/examples") as response:
             examples = json.load(response)
+        assert examples["mixed_use"]["building_height_m"] == 11
+        assert "not Planning Atlas controls" in examples["mixed_use"]["assumptions"]["screening_note"]
         request = urllib.request.Request(
             f"{base_url}/api/candidates",
             data=json.dumps(

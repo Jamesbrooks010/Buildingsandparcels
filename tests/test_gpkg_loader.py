@@ -56,3 +56,23 @@ def test_connected_townhouse_categories_return_candidates():
     assert len(parcels) == 10
     assert all(parcel.planning.zone_code == "UNKNOWN" for parcel in parcels)
     assert all(parcel.planning.zone_name in envelope.required_zone_categories for parcel in parcels)
+
+
+def test_connected_mixed_use_concept_returns_coarse_candidates():
+    path = Path("data/parcels/sa-parcels.gpkg")
+    if not path.exists():
+        return
+    envelope = BuildingEnvelope(
+        name="Indicative mixed-use concept",
+        storeys=3,
+        footprint_sqm=180,
+        building_height_m=11,
+        minimum_site_area_sqm=300,
+        required_zone_categories=["Mixed-use (non-CBD)", "Activity Centre", "CBD"],
+    )
+
+    parcels, total = load_candidate_parcels(envelope, path=path, limit=10)
+
+    assert total > 0
+    assert len(parcels) == 10
+    assert all(parcel.planning.zone_name in envelope.required_zone_categories for parcel in parcels)

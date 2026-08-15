@@ -27,7 +27,12 @@ def load_candidate_parcels(
     if not path.is_file():
         raise FileNotFoundError(f"Parcel dataset not found: {path}")
 
-    minimum_area = max(envelope.minimum_site_area_sqm or 0, envelope.footprint_sqm)
+    coverage_area = (
+        envelope.footprint_sqm / envelope.maximum_design_site_coverage
+        if envelope.maximum_design_site_coverage is not None
+        else 0
+    )
+    minimum_area = max(envelope.minimum_site_area_sqm or 0, envelope.footprint_sqm, coverage_area)
     clauses = ["area_m2 >= ?", "COALESCE(restricted, 0) = 0"]
     parameters: list[object] = [minimum_area]
     clauses.append("(storeys IS NULL OR storeys >= ?)")

@@ -82,3 +82,5 @@ See [`docs/baseline.md`](docs/baseline.md) for the consolidated implementation s
 [`docs/planning-rules-layer.md`](docs/planning-rules-layer.md) for the proposed source-linked,
 reviewable Planning Atlas integration. The observed GeoPackage category vocabulary and its limitations
 are recorded in [`docs/parcel-zone-data-contract.md`](docs/parcel-zone-data-contract.md).
+The assumptions and limitations of the three-level ground-floor-commercial concept are explicit in
+[`docs/mixed-use-concept.md`](docs/mixed-use-concept.md).

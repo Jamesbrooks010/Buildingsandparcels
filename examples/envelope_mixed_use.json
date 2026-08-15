@@ -1,0 +1,18 @@
+{
+  "name": "Indicative 3-level mixed-use concept",
+  "storeys": 3,
+  "building_height_m": 11,
+  "footprint_sqm": 180,
+  "building_width_m": 12,
+  "building_depth_m": 15,
+  "gross_floor_area_sqm": 540,
+  "minimum_site_area_sqm": 300,
+  "maximum_design_site_coverage": 0.6,
+  "required_frontage_m": 14,
+  "required_depth_m": 24,
+  "required_zone_categories": ["Mixed-use (non-CBD)", "Activity Centre", "CBD"],
+  "assumptions": {
+    "concept": "Ground-floor commercial with two residential levels above.",
+    "screening_note": "Indicative design assumptions only, not Planning Atlas controls: 180 sqm footprint on at least 300 sqm targets no more than 60% site coverage; 14m frontage, 24m depth and approximately 11m total height are concept inputs. Connected data does not establish land-use permission, authoritative height, frontage, coverage, setbacks, parking, access, overlays or mixed-use interface requirements. Planner review is required."
+  }
+}

@@ -44,6 +44,7 @@ class SiteFinderHandler(BaseHTTPRequestHandler):
                     "parcels": _load_json(EXAMPLES_DIR / "sample_parcels.json"),
                     "townhouse": _load_json(EXAMPLES_DIR / "envelope_townhouse.json"),
                     "apartment": _load_json(EXAMPLES_DIR / "envelope_apartment.json"),
+                    "mixed_use": _load_json(EXAMPLES_DIR / "envelope_mixed_use.json"),
                 }
             )
             return

@@ -29,8 +29,10 @@ class BuildingEnvelope:
     footprint_sqm: float
     building_width_m: float | None = None
     building_depth_m: float | None = None
+    building_height_m: float | None = None
     gross_floor_area_sqm: float | None = None
     minimum_site_area_sqm: float | None = None
+    maximum_design_site_coverage: float | None = None
     required_frontage_m: float = 0
     required_depth_m: float = 0
     required_zone_codes: list[str] = field(default_factory=list)
@@ -46,6 +48,9 @@ class BuildingEnvelope:
         self.building_depth_m = _optional_positive_float(
             self.building_depth_m, "building_depth_m"
         )
+        self.building_height_m = _optional_positive_float(
+            self.building_height_m, "building_height_m"
+        )
         if (
             self.building_width_m is not None
             and self.building_depth_m is not None
@@ -57,6 +62,9 @@ class BuildingEnvelope:
         )
         self.minimum_site_area_sqm = _optional_positive_float(
             self.minimum_site_area_sqm, "minimum_site_area_sqm"
+        )
+        self.maximum_design_site_coverage = _optional_ratio(
+            self.maximum_design_site_coverage, "maximum_design_site_coverage"
         )
         self.required_frontage_m = _non_negative_float(
             self.required_frontage_m, "required_frontage_m"
@@ -212,3 +220,12 @@ def _non_negative_float(value: float, field_name: str) -> float:
 
 def _optional_non_negative_float(value: float | None, field_name: str) -> float | None:
     return None if value is None else _non_negative_float(value, field_name)
+
+
+def _optional_ratio(value: float | None, field_name: str) -> float | None:
+    if value is None:
+        return None
+    value = _positive_float(value, field_name)
+    if value > 1:
+        raise ValueError(f"{field_name} must not exceed 1.")
+    return value

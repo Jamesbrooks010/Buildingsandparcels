@@ -25,6 +25,25 @@ def assess_parcel(parcel: Parcel, envelope: BuildingEnvelope) -> ParcelAssessmen
     else:
         outcomes.append(_fail("site_area", f"{parcel.land_area_sqm:.0f} sqm is below {required_site_area:.0f} sqm minimum."))
 
+    if envelope.maximum_design_site_coverage is not None:
+        design_coverage = envelope.footprint_sqm / parcel.land_area_sqm
+        if design_coverage <= envelope.maximum_design_site_coverage:
+            outcomes.append(
+                _pass(
+                    "design_site_coverage",
+                    f"Indicative design coverage {design_coverage:.0%} fits the scenario target "
+                    f"of {envelope.maximum_design_site_coverage:.0%}.",
+                )
+            )
+        else:
+            outcomes.append(
+                _fail(
+                    "design_site_coverage",
+                    f"Indicative design coverage {design_coverage:.0%} exceeds the scenario target "
+                    f"of {envelope.maximum_design_site_coverage:.0%}.",
+                )
+            )
+
     if envelope.required_zone_codes:
         if planning.zone_code in envelope.required_zone_codes:
             outcomes.append(_pass("zone", f"Zone {planning.zone_code} is allowed."))
@@ -52,6 +71,28 @@ def assess_parcel(parcel: Parcel, envelope: BuildingEnvelope) -> ParcelAssessmen
             outcomes.append(_fail("storeys", f"{envelope.storeys} storeys exceeds {planning.max_storeys} storey control."))
     else:
         outcomes.append(_review("storeys", "No maximum storeys control supplied for this parcel."))
+
+    if envelope.building_height_m is not None:
+        if planning.max_building_height_m is None:
+            outcomes.append(
+                _review("building_height", "No maximum building-height control supplied for this parcel.")
+            )
+        elif envelope.building_height_m <= planning.max_building_height_m:
+            outcomes.append(
+                _pass(
+                    "building_height",
+                    f"Height {envelope.building_height_m:g}m fits the "
+                    f"{planning.max_building_height_m:g}m control.",
+                )
+            )
+        else:
+            outcomes.append(
+                _fail(
+                    "building_height",
+                    f"Height {envelope.building_height_m:g}m exceeds the "
+                    f"{planning.max_building_height_m:g}m control.",
+                )
+            )
 
     if planning.max_site_coverage is not None:
         site_coverage = envelope.footprint_sqm / parcel.land_area_sqm

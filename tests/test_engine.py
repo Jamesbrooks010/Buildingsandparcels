@@ -131,3 +131,53 @@ def test_zone_category_is_checked_without_guessing_a_zone_code():
 
     assert outcomes["zone_category"] == MatchStatus.PASS
     assert "zone" not in outcomes
+
+
+def test_building_height_passes_or_requires_review_from_explicit_control():
+    envelope = BuildingEnvelope(
+        name="Three-level concept",
+        storeys=3,
+        footprint_sqm=180,
+        building_height_m=11,
+    )
+    controlled = Parcel(
+        parcel_id="controlled",
+        land_area_sqm=400,
+        planning=PlanningControls(
+            zone_code="TEST", max_storeys=3, max_building_height_m=12
+        ),
+    )
+    unknown = Parcel(
+        parcel_id="unknown",
+        land_area_sqm=400,
+        planning=PlanningControls(zone_code="UNKNOWN", max_storeys=3),
+    )
+
+    controlled_outcomes = {
+        outcome.rule: outcome.status for outcome in assess_parcel(controlled, envelope).outcomes
+    }
+    unknown_outcomes = {
+        outcome.rule: outcome.status for outcome in assess_parcel(unknown, envelope).outcomes
+    }
+
+    assert controlled_outcomes["building_height"] == MatchStatus.PASS
+    assert unknown_outcomes["building_height"] == MatchStatus.REVIEW
+
+
+def test_design_coverage_is_separate_from_unknown_planning_control():
+    envelope = BuildingEnvelope(
+        name="Coverage target",
+        storeys=3,
+        footprint_sqm=180,
+        maximum_design_site_coverage=0.6,
+    )
+    parcel = Parcel(
+        parcel_id="coverage",
+        land_area_sqm=300,
+        planning=PlanningControls(zone_code="UNKNOWN", max_storeys=3),
+    )
+
+    outcomes = {outcome.rule: outcome.status for outcome in assess_parcel(parcel, envelope).outcomes}
+
+    assert outcomes["design_site_coverage"] == MatchStatus.PASS
+    assert outcomes["site_coverage"] == MatchStatus.REVIEW
