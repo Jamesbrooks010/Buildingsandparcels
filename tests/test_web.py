@@ -1,13 +1,13 @@
 import json
+import pytest
 import threading
 import urllib.request
-from http.server import ThreadingHTTPServer
 
-from site_finder.web import SiteFinderHandler
+from site_finder.web import ExclusiveThreadingHTTPServer, SiteFinderHandler
 
 
 def test_preview_serves_home_and_screens_examples():
-    server = ThreadingHTTPServer(("127.0.0.1", 0), SiteFinderHandler)
+    server = ExclusiveThreadingHTTPServer(("127.0.0.1", 0), SiteFinderHandler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     base_url = f"http://127.0.0.1:{server.server_port}"
@@ -40,3 +40,14 @@ def test_preview_serves_home_and_screens_examples():
     finally:
         server.shutdown()
         thread.join()
+
+
+def test_preview_refuses_to_share_an_active_port():
+    first = ExclusiveThreadingHTTPServer(("127.0.0.1", 0), SiteFinderHandler)
+    try:
+        with pytest.raises(OSError):
+            ExclusiveThreadingHTTPServer(
+                ("127.0.0.1", first.server_port), SiteFinderHandler
+            )
+    finally:
+        first.server_close()

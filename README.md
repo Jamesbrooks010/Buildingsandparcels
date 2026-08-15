@@ -52,6 +52,10 @@ python -m site_finder.web --port 8011
 After installing with `pip install -e .`, the module command above works even when the Python scripts
 directory is not on `PATH`.
 
+The preview requires exclusive ownership of its port. If an older preview is still running, startup now
+stops with a clear “address is already in use” message instead of allowing old and new code to serve
+interchangeably on Windows.
+
 Then post a request to `POST /candidates` with this shape:
 
 ```json

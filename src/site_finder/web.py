@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import mimetypes
+import socket
 from dataclasses import asdict
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -17,6 +18,19 @@ from .models import BuildingEnvelope, Parcel
 
 STATIC_DIR = Path(__file__).with_name("static")
 EXAMPLES_DIR = Path(__file__).resolve().parents[2] / "examples"
+
+
+class ExclusiveThreadingHTTPServer(ThreadingHTTPServer):
+    """Prevent stale and current previews from silently sharing one port."""
+
+    allow_reuse_address = False
+    allow_reuse_port = False
+
+    def server_bind(self) -> None:
+        exclusive = getattr(socket, "SO_EXCLUSIVEADDRUSE", None)
+        if exclusive is not None:
+            self.socket.setsockopt(socket.SOL_SOCKET, exclusive, 1)
+        super().server_bind()
 
 
 class SiteFinderHandler(BaseHTTPRequestHandler):
@@ -101,7 +115,13 @@ def main() -> None:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
-    server = ThreadingHTTPServer((args.host, args.port), SiteFinderHandler)
+    try:
+        server = ExclusiveThreadingHTTPServer((args.host, args.port), SiteFinderHandler)
+    except OSError as exc:
+        raise SystemExit(
+            f"Cannot start Adelaide Site Finder on http://{args.host}:{args.port}: "
+            "the address is already in use. Stop the older preview or choose another --port."
+        ) from exc
     print(f"Adelaide Site Finder preview: http://{args.host}:{args.port}")
     try:
         server.serve_forever()
