@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sqlite3
+import struct
 from pathlib import Path
 
 from .models import BuildingEnvelope, Parcel, PlanningControls
@@ -50,7 +51,7 @@ def load_candidate_parcels(
         parameters.extend(zone_categories)
 
     where = " AND ".join(clauses)
-    columns = "fid, area_m2, km_ring, est_zone, zone_category, storeys, min_lot, heritage"
+    columns = "fid, geom, area_m2, km_ring, est_zone, zone_category, storeys, min_lot, heritage"
     with sqlite3.connect(path) as connection:
         connection.row_factory = sqlite3.Row
         total = connection.execute(
@@ -64,11 +65,15 @@ def load_candidate_parcels(
 
     parcels = []
     for row in rows:
+        map_point = _gpkg_envelope_center(row["geom"])
         parcels.append(
             Parcel(
                 parcel_id=str(row["fid"]),
                 land_area_sqm=row["area_m2"],
                 geometry_ref=f"{LAYER}:{row['fid']}",
+                map_x=map_point[0] if map_point else None,
+                map_y=map_point[1] if map_point else None,
+                map_crs="EPSG:7854" if map_point else None,
                 planning=PlanningControls(
                     zone_code=row["est_zone"] or "UNKNOWN",
                     zone_name=row["zone_category"] or row["est_zone"],
@@ -86,3 +91,16 @@ def _optional_int(value: object) -> int | None:
     if value is None or float(value) <= 0:
         return None
     return max(1, round(float(value)))
+
+
+def _gpkg_envelope_center(geometry: bytes | None) -> tuple[float, float] | None:
+    """Return the centre of a GeoPackage XY envelope without inventing coordinates."""
+    if geometry is None or len(geometry) < 40 or geometry[:2] != b"GP":
+        return None
+    flags = geometry[3]
+    envelope_type = (flags >> 1) & 0b111
+    if envelope_type == 0:
+        return None
+    endian = "<" if flags & 1 else ">"
+    min_x, max_x, min_y, max_y = struct.unpack(f"{endian}dddd", geometry[8:40])
+    return ((min_x + max_x) / 2, (min_y + max_y) / 2)

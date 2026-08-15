@@ -155,11 +155,16 @@ class Parcel:
     frontage_m: float | None = None
     depth_m: float | None = None
     geometry_ref: str | None = None
+    map_x: float | None = None
+    map_y: float | None = None
+    map_crs: str | None = None
 
     def __post_init__(self) -> None:
         self.land_area_sqm = _positive_float(self.land_area_sqm, "land_area_sqm")
         self.frontage_m = _optional_non_negative_float(self.frontage_m, "frontage_m")
         self.depth_m = _optional_non_negative_float(self.depth_m, "depth_m")
+        self.map_x = _optional_float(self.map_x, "map_x")
+        self.map_y = _optional_float(self.map_y, "map_y")
         if isinstance(self.planning, dict):
             self.planning = PlanningControls.model_validate(self.planning)
 
@@ -229,3 +234,12 @@ def _optional_ratio(value: float | None, field_name: str) -> float | None:
     if value > 1:
         raise ValueError(f"{field_name} must not exceed 1.")
     return value
+
+
+def _optional_float(value: float | None, field_name: str) -> float | None:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{field_name} must be numeric.") from exc

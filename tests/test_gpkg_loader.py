@@ -17,6 +17,9 @@ def test_reads_local_parcel_geopackage():
     assert total > 0
     assert len(parcels) == 3
     assert all(parcel.land_area_sqm >= 60 for parcel in parcels)
+    assert all(parcel.map_crs == "EPSG:7854" for parcel in parcels)
+    assert all(100_000 < parcel.map_x < 900_000 for parcel in parcels)
+    assert all(5_000_000 < parcel.map_y < 8_000_000 for parcel in parcels)
 
 
 def test_filters_mixed_use_categories():
@@ -56,6 +59,7 @@ def test_connected_townhouse_categories_return_candidates():
     assert len(parcels) == 10
     assert all(parcel.planning.zone_code == "UNKNOWN" for parcel in parcels)
     assert all(parcel.planning.zone_name in envelope.required_zone_categories for parcel in parcels)
+    assert all(parcel.map_x is not None and parcel.map_y is not None for parcel in parcels)
 
 
 def test_connected_mixed_use_concept_returns_coarse_candidates():

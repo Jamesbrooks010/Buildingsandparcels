@@ -89,26 +89,66 @@ form.addEventListener("submit", async (event) => {
 });
 
 function renderResults(results, totalMatches) {
-  document.querySelector("#map-empty").style.display = "none";
-  document.querySelectorAll(".pin").forEach((pin) => pin.remove());
-  const passing = results.filter((result) => result.status !== "fail").length;
   document.querySelector("#result-summary").textContent = `${totalMatches.toLocaleString()} matching parcels found; showing the first ${results.length}.`;
-  const map = document.querySelector("#map");
-  results.slice(0, 12).forEach((result, index) => {
-    const pin = document.createElement("span");
-    pin.className = `pin ${index % 2 ? "two" : "one"} ${result.status === "fail" ? "fail" : ""}`;
-    pin.title = result.parcel.address || result.parcel.parcel_id;
-    map.appendChild(pin);
-  });
   document.querySelector("#results").innerHTML = results.map((result) => `
-    <details class="result-card">
+    <details class="result-card" data-parcel-id="${result.parcel.parcel_id}">
       <summary>
-        <i class="result-status ${result.status === "fail" ? "fail" : ""}"></i>
+        <i class="result-status ${result.status}"></i>
         <div><strong>Parcel ${result.parcel.parcel_id}</strong><small>${Math.round(result.parcel.land_area_sqm)}m&sup2; &middot; ${result.parcel.planning.zone_name || result.parcel.planning.zone_code} &middot; ${result.status.toUpperCase()}</small></div>
         <span class="score">${Math.round(result.score * 100)}%</span>
       </summary>
       <ul>${result.outcomes.map((outcome) => `<li><strong>${outcome.status.toUpperCase()}</strong> — ${outcome.message}</li>`).join("")}</ul>
     </details>`).join("");
+  renderMap(results);
+}
+
+function renderMap(results) {
+  const svg = document.querySelector("#result-map");
+  const empty = document.querySelector("#map-empty");
+  const caption = document.querySelector("#map-caption");
+  const mapped = results.filter((result) => Number.isFinite(result.parcel.map_x) && Number.isFinite(result.parcel.map_y));
+  svg.replaceChildren();
+  if (!mapped.length) {
+    empty.style.display = "grid";
+    empty.querySelector("strong").textContent = "No recorded geometry for these results";
+    empty.querySelector("small").textContent = "Use the result list below; coordinates are never fabricated for sample parcels.";
+    caption.textContent = `0 of ${results.length} returned results have recorded map geometry.`;
+    return;
+  }
+
+  empty.style.display = "none";
+  const xs = mapped.map((result) => result.parcel.map_x);
+  const ys = mapped.map((result) => result.parcel.map_y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const xRange = maxX - minX || 1, yRange = maxY - minY || 1;
+  mapped.forEach((result) => {
+    const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    marker.setAttribute("cx", String(40 + ((result.parcel.map_x - minX) / xRange) * 920));
+    marker.setAttribute("cy", String(460 - ((result.parcel.map_y - minY) / yRange) * 420));
+    marker.setAttribute("r", "7");
+    marker.setAttribute("class", `map-marker ${result.status}`);
+    marker.setAttribute("tabindex", "0");
+    marker.setAttribute("role", "button");
+    marker.setAttribute("aria-label", `Parcel ${result.parcel.parcel_id}, ${result.status}. Open screening reasons.`);
+    marker.addEventListener("click", () => selectParcel(result.parcel.parcel_id, marker));
+    marker.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") selectParcel(result.parcel.parcel_id, marker);
+    });
+    svg.appendChild(marker);
+  });
+  caption.textContent = `Showing ${mapped.length} returned parcel envelope centres in EPSG:7854; search is capped at ${results.length} displayed results.`;
+}
+
+function selectParcel(parcelId, marker) {
+  document.querySelectorAll(".map-marker.selected,.result-card.selected").forEach((item) => item.classList.remove("selected"));
+  marker.classList.add("selected");
+  const card = document.querySelector(`.result-card[data-parcel-id="${CSS.escape(String(parcelId))}"]`);
+  if (card) {
+    card.classList.add("selected");
+    card.open = true;
+    card.scrollIntoView({behavior: "smooth", block: "nearest"});
+  }
 }
 
 initialise();

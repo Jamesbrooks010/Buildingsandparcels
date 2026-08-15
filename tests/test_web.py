@@ -39,6 +39,7 @@ def test_preview_serves_home_and_screens_examples():
         assert len(payload["results"]) == 2
         assert payload["results"][0]["parcel"]["parcel_id"] == "sample-001"
         assert payload["results"][0]["status"] == "pass"
+        assert payload["results"][0]["parcel"]["map_x"] is None
     finally:
         server.shutdown()
         thread.join()

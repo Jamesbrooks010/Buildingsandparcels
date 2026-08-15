@@ -65,11 +65,11 @@
             <span class="step">02</span>
             <div><h2>Candidate sites</h2><p id="result-summary">Run a search to assess the sample parcels.</p></div>
           </div>
-          <div id="map" class="map" aria-label="Stylised map of Adelaide sample sites">
-            <div class="map-grid"></div><span class="road r1"></span><span class="road r2"></span><span class="road r3"></span>
-            <div class="map-label city">ADELAIDE</div><div class="map-label north">NORTH ADELAIDE</div><div class="map-label kent">KENT TOWN</div>
-            <div id="map-empty" class="map-empty"><span>?</span><strong>Your results will appear here</strong><small>Set your assumptions and run the site search.</small></div>
+          <div id="map" class="map" aria-label="Screened parcel locations">
+            <svg id="result-map" viewBox="0 0 1000 500" role="img" aria-label="Returned parcel locations"></svg>
+            <div id="map-empty" class="map-empty"><span>?</span><strong>Your results will appear here</strong><small>Connected results use recorded parcel geometry; sample records have no map coordinates.</small></div>
           </div>
+          <div class="map-meta"><span><i class="map-dot pass"></i>Pass</span><span><i class="map-dot review"></i>Review</span><span><i class="map-dot fail"></i>Fail</span><small id="map-caption">The map is limited to returned results.</small></div>
           <div id="results" class="results-list"></div>
         </section>
       </section>

@@ -25,5 +25,6 @@ source-linked controls and parcel dimensions are available.
 ## Reproducing the screen
 
 Start the preview, select **Mixed use**, retain **Connected parcel dataset**, and run the search. Expand a
-result card to see every pass, fail, and review reason.
-
+result card to see every pass, fail, and review reason. The map plots the first 100 returned parcel-envelope
+centres; selecting a marker opens its matching explanation. It does not display all coarse candidates or
+authoritative parcel boundaries.

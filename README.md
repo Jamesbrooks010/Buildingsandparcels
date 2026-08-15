@@ -56,6 +56,18 @@ The preview requires exclusive ownership of its port. If an older preview is sti
 stops with a clear “address is already in use” message instead of allowing old and new code to serve
 interchangeably on Windows.
 
+## Using the results map
+
+Run a Connected parcel search to plot the returned results using centres derived from their recorded
+GeoPackage geometry. Markers are coloured by `pass`, `review`, or `fail`; select a marker to open and
+highlight the matching result card and its rule-by-rule reasons. The API returns at most 500 results and
+the preview requests the first 100, so the map clearly represents the displayed subset rather than every
+matching parcel. Coordinates remain in the source `EPSG:7854` projection and the first version is a
+relative location plot, not a street basemap or parcel-boundary survey.
+
+Sample records intentionally have no geometry. Sample searches therefore show an explicit unmapped state
+while retaining the selectable result list; the application never fabricates coordinates.
+
 Then post a request to `POST /candidates` with this shape:
 
 ```json
