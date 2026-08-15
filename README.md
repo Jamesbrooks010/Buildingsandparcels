@@ -38,9 +38,19 @@ uvicorn site_finder.api:app --reload
 Or run the dependency-free visual preview (recommended while the real data is not attached):
 
 ```bash
-site-finder-web
+python -m site_finder.web
 # Open http://127.0.0.1:8000
 ```
+
+If port 8000 is already in use, choose another port explicitly:
+
+```bash
+python -m site_finder.web --port 8011
+# Open http://127.0.0.1:8011
+```
+
+After installing with `pip install -e .`, the module command above works even when the Python scripts
+directory is not on `PATH`.
 
 Then post a request to `POST /candidates` with this shape:
 
