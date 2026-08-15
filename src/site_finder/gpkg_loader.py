@@ -36,7 +36,9 @@ def load_candidate_parcels(
         placeholders = ",".join("?" for _ in envelope.required_zone_codes)
         clauses.append(f"UPPER(est_zone) IN ({placeholders})")
         parameters.extend(envelope.required_zone_codes)
-    zone_categories = envelope.assumptions.get("zone_categories", [])
+    zone_categories = envelope.required_zone_categories or envelope.assumptions.get(
+        "zone_categories", []
+    )
     if zone_categories:
         placeholders = ",".join("?" for _ in zone_categories)
         clauses.append(f"zone_category IN ({placeholders})")

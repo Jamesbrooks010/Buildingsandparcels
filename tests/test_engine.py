@@ -109,3 +109,25 @@ def test_invalid_frontage_range_is_rejected():
         assert "min_frontage_m" in str(error)
     else:
         raise AssertionError("Expected an invalid frontage range to raise ValueError")
+
+
+def test_zone_category_is_checked_without_guessing_a_zone_code():
+    envelope = BuildingEnvelope(
+        name="Category check",
+        storeys=2,
+        footprint_sqm=60,
+        required_zone_categories=["General Neighbourhood"],
+    )
+    parcel = Parcel(
+        parcel_id="category-only",
+        land_area_sqm=200,
+        planning=PlanningControls(
+            zone_code="UNKNOWN", zone_name="General Neighbourhood", max_storeys=2
+        ),
+    )
+
+    result = assess_parcel(parcel, envelope)
+    outcomes = {outcome.rule: outcome.status for outcome in result.outcomes}
+
+    assert outcomes["zone_category"] == MatchStatus.PASS
+    assert "zone" not in outcomes

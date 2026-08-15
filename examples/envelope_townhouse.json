@@ -8,7 +8,7 @@
   "minimum_site_area_sqm": 100,
   "required_frontage_m": 5,
   "required_depth_m": 16,
-  "required_zone_codes": ["GN", "HDN"],
+  "required_zone_categories": ["General Neighbourhood", "Higher density neighbourhood"],
   "assumptions": {
     "description": "Starter assumptions only; replace with planner-reviewed controls before production use."
   }

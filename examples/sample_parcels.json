@@ -32,7 +32,7 @@
     "geometry_ref": "attach-real-geometry-later",
     "planning": {
       "zone_code": "UC",
-      "zone_name": "Urban Corridor",
+      "zone_name": "Mixed-use (non-CBD)",
       "max_storeys": 6,
       "max_site_coverage": 0.7,
       "max_floor_area_ratio": 3.5,

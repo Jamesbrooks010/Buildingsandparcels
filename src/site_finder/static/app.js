@@ -1,12 +1,13 @@
 const form = document.querySelector("#search-form");
 const presetButtons = document.querySelectorAll(".preset");
 const fields = {
+  dataSource: document.querySelector("#data-source"),
   name: document.querySelector("#name"), storeys: document.querySelector("#storeys"),
   footprint: document.querySelector("#footprint"), siteArea: document.querySelector("#site-area"),
   buildingWidth: document.querySelector("#building-width"),
   buildingDepth: document.querySelector("#building-depth"),
   frontage: document.querySelector("#frontage"), depth: document.querySelector("#depth"),
-  zones: document.querySelector("#zones"),
+  zoneCategories: document.querySelector("#zone-categories"),
 };
 let examples;
 
@@ -19,7 +20,7 @@ function setEnvelope(envelope) {
   fields.siteArea.value = envelope.minimum_site_area_sqm || "";
   fields.frontage.value = envelope.required_frontage_m || "";
   fields.depth.value = envelope.required_depth_m || "";
-  fields.zones.value = (envelope.required_zone_codes || []).join(", ");
+  fields.zoneCategories.value = (envelope.required_zone_categories || []).join(", ");
 }
 
 async function initialise() {
@@ -32,6 +33,10 @@ async function initialise() {
   status.innerHTML = `<i></i> ${dataset.connected ? `${dataset.parcel_count.toLocaleString()} real parcels connected` : "Parcel data unavailable"}`;
   document.querySelector(".hero-stat span").textContent = dataset.connected ? "491k" : "02";
   document.querySelector(".hero-stat p").innerHTML = dataset.connected ? "South Australian parcels<br />ready to screen" : "sample parcels<br />ready to screen";
+  if (!dataset.connected) {
+    fields.dataSource.value = "sample";
+    fields.dataSource.querySelector('[value="connected"]').disabled = true;
+  }
   setEnvelope(examples.townhouse);
 }
 
@@ -51,14 +56,19 @@ form.addEventListener("submit", async (event) => {
     minimum_site_area_sqm: Number(fields.siteArea.value) || null,
     required_frontage_m: Number(fields.frontage.value) || 0,
     required_depth_m: Number(fields.depth.value) || 0,
-    required_zone_codes: fields.zones.value.split(",").map((zone) => zone.trim()).filter(Boolean),
+    required_zone_categories: fields.zoneCategories.value.split(",").map((category) => category.trim()).filter(Boolean),
   };
   const button = form.querySelector(".search-button span");
   button.textContent = "Screening parcels?";
   try {
     const response = await fetch("/api/candidates", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ envelope, use_local_dataset: true, limit: 100 }),
+      body: JSON.stringify({
+        envelope,
+        parcels: examples.parcels,
+        use_local_dataset: fields.dataSource.value === "connected",
+        limit: 100,
+      }),
     });
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error || "Unable to screen parcels");

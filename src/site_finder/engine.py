@@ -31,6 +31,20 @@ def assess_parcel(parcel: Parcel, envelope: BuildingEnvelope) -> ParcelAssessmen
         else:
             outcomes.append(_fail("zone", f"Zone {planning.zone_code} is not in allowed zones: {', '.join(envelope.required_zone_codes)}."))
 
+    if envelope.required_zone_categories:
+        if planning.zone_name in envelope.required_zone_categories:
+            outcomes.append(_pass("zone_category", f"Zone category {planning.zone_name} is allowed."))
+        elif planning.zone_name is None:
+            outcomes.append(_review("zone_category", "An allowed zone category is required, but the parcel category is missing."))
+        else:
+            outcomes.append(
+                _fail(
+                    "zone_category",
+                    f"Zone category {planning.zone_name} is not allowed: "
+                    f"{', '.join(envelope.required_zone_categories)}.",
+                )
+            )
+
     if planning.max_storeys is not None:
         if envelope.storeys <= planning.max_storeys:
             outcomes.append(_pass("storeys", f"{envelope.storeys} storeys fits {planning.max_storeys} storey control."))

@@ -13,7 +13,10 @@ def test_preview_serves_home_and_screens_examples():
     base_url = f"http://127.0.0.1:{server.server_port}"
     try:
         with urllib.request.urlopen(base_url) as response:
-            assert b"Find the right site" in response.read()
+            home = response.read()
+            assert b"Find the right site" in home
+            assert b"Connected parcel dataset" in home
+            assert b"Two sample parcels" in home
 
         with urllib.request.urlopen(f"{base_url}/api/examples") as response:
             examples = json.load(response)
@@ -33,6 +36,7 @@ def test_preview_serves_home_and_screens_examples():
             payload = json.load(response)
         assert len(payload["results"]) == 2
         assert payload["results"][0]["parcel"]["parcel_id"] == "sample-001"
+        assert payload["results"][0]["status"] == "pass"
     finally:
         server.shutdown()
         thread.join()

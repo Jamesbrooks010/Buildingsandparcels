@@ -41,6 +41,7 @@
           </div>
 
           <div class="fields">
+            <label class="wide">Data source<select id="data-source" name="data-source"><option value="connected">Connected parcel dataset</option><option value="sample">Two sample parcels</option></select></label>
             <label class="wide">Scenario name<input id="name" name="name" required /></label>
             <label>Storeys<input id="storeys" name="storeys" type="number" min="1" required /></label>
             <label>Footprint<input id="footprint" name="footprint" type="number" min="1" required /><span class="unit">m?</span></label>
@@ -49,7 +50,7 @@
             <label>Minimum site area<input id="site-area" name="site-area" type="number" min="1" /><span class="unit">m?</span></label>
             <label>Minimum frontage<input id="frontage" name="frontage" type="number" min="0" step="0.1" /><span class="unit">m</span></label>
             <label>Minimum depth<input id="depth" name="depth" type="number" min="0" step="0.1" /><span class="unit">m</span></label>
-            <label>Allowed zones<input id="zones" name="zones" placeholder="e.g. GN, HDN" /></label>
+            <label class="wide">Allowed zone categories<input id="zone-categories" name="zone-categories" placeholder="Exact categories, separated by commas" /></label>
           </div>
           <button class="search-button" type="submit"><span>Find suitable sites</span><b>?</b></button>
           <p class="disclaimer">Screening results are indicative only and require professional planning review.</p>

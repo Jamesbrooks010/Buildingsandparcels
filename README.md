@@ -76,4 +76,5 @@ This is an early screening tool, not a planning approval decision. Outputs shoul
 
 See [`docs/baseline.md`](docs/baseline.md) for the consolidated implementation state and
 [`docs/planning-rules-layer.md`](docs/planning-rules-layer.md) for the proposed source-linked,
-reviewable Planning Atlas integration.
+reviewable Planning Atlas integration. The observed GeoPackage category vocabulary and its limitations
+are recorded in [`docs/parcel-zone-data-contract.md`](docs/parcel-zone-data-contract.md).

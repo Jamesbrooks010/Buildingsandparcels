@@ -28,7 +28,7 @@ def test_filters_mixed_use_categories():
         storeys=3,
         footprint_sqm=150,
         minimum_site_area_sqm=200,
-        assumptions={"zone_categories": ["Mixed-use (non-CBD)", "Activity Centre", "CBD"]},
+        required_zone_categories=["Mixed-use (non-CBD)", "Activity Centre", "CBD"],
     )
     parcels, total = load_candidate_parcels(envelope, path=path, limit=10)
     assert total > 0
@@ -36,3 +36,23 @@ def test_filters_mixed_use_categories():
         parcel.planning.zone_name in {"Mixed-use (non-CBD)", "Activity Centre", "CBD"}
         for parcel in parcels
     )
+
+
+def test_connected_townhouse_categories_return_candidates():
+    path = Path("data/parcels/sa-parcels.gpkg")
+    if not path.exists():
+        return
+    envelope = BuildingEnvelope(
+        name="Townhouse category screen",
+        storeys=2,
+        footprint_sqm=60,
+        minimum_site_area_sqm=100,
+        required_zone_categories=["General Neighbourhood", "Higher density neighbourhood"],
+    )
+
+    parcels, total = load_candidate_parcels(envelope, path=path, limit=10)
+
+    assert total > 0
+    assert len(parcels) == 10
+    assert all(parcel.planning.zone_code == "UNKNOWN" for parcel in parcels)
+    assert all(parcel.planning.zone_name in envelope.required_zone_categories for parcel in parcels)

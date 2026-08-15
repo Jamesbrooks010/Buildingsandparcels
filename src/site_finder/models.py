@@ -34,6 +34,7 @@ class BuildingEnvelope:
     required_frontage_m: float = 0
     required_depth_m: float = 0
     required_zone_codes: list[str] = field(default_factory=list)
+    required_zone_categories: list[str] = field(default_factory=list)
     assumptions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -62,6 +63,9 @@ class BuildingEnvelope:
         )
         self.required_depth_m = _non_negative_float(self.required_depth_m, "required_depth_m")
         self.required_zone_codes = [zone.strip().upper() for zone in self.required_zone_codes if zone.strip()]
+        self.required_zone_categories = [
+            category.strip() for category in self.required_zone_categories if category.strip()
+        ]
 
     @property
     def effective_gfa_sqm(self) -> float:

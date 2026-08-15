@@ -42,9 +42,10 @@ building shape from footprint area alone.
 
 - The local GeoPackage does not currently supply measured frontage/depth or the new coverage, frontage,
   and setback controls. These checks become useful at scale only after a traceable spatial/rules join.
+- The GeoPackage's `est_zone` column is entirely null. Connected screening therefore uses exact observed
+  `zone_category` values, documented in `parcel-zone-data-contract.md`, without inferring zone codes.
 - Parcel width/depth are simplified dimensions; irregular parcels need geometry-based buildable-area
   analysis in a later phase.
 - No Planning Atlas rule corpus has been imported or interpreted.
 - No market, transaction, approval, or built-outcome data is present.
 - Results are screening evidence for professional review, not planning approval or advice.
-
